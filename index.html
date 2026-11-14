@@ -96,6 +96,17 @@ h2{font-family:var(--serif);font-weight:600;font-size:clamp(23px,3.4vw,32px);lin
 .hc-label{font-size:12px;color:var(--muted);margin-bottom:12px}
 .hc-alert{border:1px solid rgba(217,164,65,.45);background:rgba(217,164,65,.08);color:#E8C888;border-radius:8px;padding:12px 14px;font-size:13.5px;line-height:1.6}
 .hint-card p{color:var(--muted);font-size:13px;margin-top:14px}
+.video-slot{margin-top:26px}
+.video-frame{position:relative;width:100%;aspect-ratio:16/9;background:var(--panel-2);border:1px solid var(--line);border-radius:12px;overflow:hidden}
+.video-frame video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:none;background:#000}
+.video-frame video.show{display:block}
+.video-empty{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;text-align:center;padding:20px;border:1px dashed #2E3E34;border-radius:12px;background:
+  repeating-linear-gradient(45deg,rgba(99,192,139,.03) 0 10px,transparent 10px 20px)}
+.video-empty.hide{display:none}
+.ve-play{width:52px;height:52px;border-radius:50%;border:1px solid rgba(99,192,139,.45);display:flex;align-items:center;justify-content:center;color:var(--green);margin-bottom:4px}
+.video-empty b{font-size:16px}
+.video-empty span{color:var(--muted);font-size:13px;max-width:32em}
+.video-meta{display:flex;flex-wrap:wrap;gap:8px 18px;color:var(--muted);font-size:12.5px;margin-top:10px}
 .win-box{margin-top:16px;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:18px 18px 14px}
 .wb-head{font-size:13px;color:var(--amber);margin-bottom:8px}
 .win-box p{color:var(--muted);font-size:13px;margin-top:10px}
@@ -131,6 +142,11 @@ footer .wrap{display:flex;flex-wrap:wrap;gap:18px;justify-content:space-between}
 footer a{text-decoration:none;color:var(--muted)}
 footer a:hover{color:var(--text)}
 
+@media (max-width:719px){
+  .nav-links{display:none}
+  .nav .wrap{height:56px}
+  h1{font-size:clamp(28px,8.5vw,36px)}
+}
 @media (min-width:720px){
   .hero-grid{grid-template-columns:1.15fr .85fr;align-items:center;gap:44px}
   .strip .wrap{grid-template-columns:repeat(4,1fr)}
@@ -159,6 +175,7 @@ footer a:hover{color:var(--text)}
     <div class="nav-links">
       <a href="#features">功能</a>
       <a href="#storage">存储</a>
+      <a href="#video">视频教程</a>
       <a href="#deploy">部署</a>
       <a href="#container">推荐配置</a>
       <a href="#roadmap">路线图</a>
@@ -338,6 +355,32 @@ footer a:hover{color:var(--text)}
         <button type="button" data-src="assets/screenshots/05-admin-storage.png" data-cap="管理后台 · 存储策略列表与添加入口" aria-pressed="false"><img src="assets/screenshots/05-admin-storage.png" alt="存储策略页"></button>
         <button type="button" data-src="assets/screenshots/06-admin-storage-disclosure.png" data-cap="添加策略前的告知：哪些信息会对用户展示" aria-pressed="false"><img src="assets/screenshots/06-admin-storage-disclosure.png" alt="策略告知弹窗"></button>
         <button type="button" data-src="assets/screenshots/07-admin-groups.png" data-cap="管理后台 · 用户组：空间、单文件、7 天流量" aria-pressed="false"><img src="assets/screenshots/07-admin-groups.png" alt="用户组页"></button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="video">
+  <div class="wrap">
+    <div class="sec-head"><h2>视频教程</h2><span class="sec-note">占位中 · 待上传</span></div>
+    <p class="sub">从零走一遍：起容器、配 Supabase、建存储策略、发第一个文件。视频文件放进 <code>docs/video-teaching/</code>，页面会自动接上。</p>
+    <div class="video-slot">
+      <div class="video-frame" id="videoFrame">
+        <video id="tutVideo" controls preload="metadata" playsinline poster="">
+          <source id="tutSource" src="docs/video-teaching/tutorial.mp4" type="video/mp4">
+        </video>
+        <div class="video-empty" id="videoEmpty">
+          <div class="ve-play" aria-hidden="true">
+            <svg viewBox="0 0 24 24" width="26" height="26"><path d="M8 5.5v13l10-6.5z" fill="currentColor"/></svg>
+          </div>
+          <b>教程视频待上传</b>
+          <span>放到 <code>docs/video-teaching/tutorial.mp4</code> 后刷新本页即可播放</span>
+        </div>
+      </div>
+      <div class="video-meta">
+        <span>16:9 · MP4（H.264 + AAC）</span>
+        <span>建议 1080p，单集 5–10 分钟</span>
+        <span>字幕用内嵌或同名 <code>.vtt</code></span>
       </div>
     </div>
   </div>
