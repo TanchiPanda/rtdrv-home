@@ -96,6 +96,7 @@ h2{font-family:var(--serif);font-weight:600;font-size:clamp(23px,3.4vw,32px);lin
 .hc-label{font-size:12px;color:var(--muted);margin-bottom:12px}
 .hc-alert{border:1px solid rgba(217,164,65,.45);background:rgba(217,164,65,.08);color:#E8C888;border-radius:8px;padding:12px 14px;font-size:13.5px;line-height:1.6}
 .hint-card p{color:var(--muted);font-size:13px;margin-top:14px}
+.img-note{margin-top:16px;color:var(--muted);font-size:13px;line-height:1.8}
 .timeline-card{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:22px 20px;margin-top:30px}
 
 .timeline{display:grid;grid-template-columns:48px 12px 1fr;gap:0 14px}
@@ -131,6 +132,7 @@ footer a:hover{color:var(--text)}
 }
 @media (min-width:1000px){
   .cards{grid-template-columns:repeat(3,1fr)}
+  .deploy-cards{grid-template-columns:repeat(2,1fr)}
   section{padding:78px 0}
 }
 @media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}.btn{transition:none}}
@@ -173,7 +175,8 @@ footer a:hover{color:var(--text)}
 <span class="a">请管理员凭管理密码进入设置页配置 Supabase</span>
 
 <span class="c"># 后台配完账号，再建一个存储策略</span>
-<span class="c"># 用户用邮箱登录，目录就是 data/&lt;邮箱&gt;/…</span></pre>
+<span class="c"># 用户用邮箱登录，目录就是 data/&lt;邮箱&gt;/…
+# 端口 5212：http://&lt;主机&gt;:5212</span></pre>
     </div>
   </div>
 </header>
@@ -183,7 +186,7 @@ footer a:hover{color:var(--text)}
     <div class="stat"><b>3</b><span>类存储策略：数据卷 / S3 / GitHub</span></div>
     <div class="stat"><b>8</b><span>个管理后台页面</span></div>
     <div class="stat"><b>28</b><span>项接口自检（当前全部通过）</span></div>
-    <div class="stat"><b>1</b><span>个容器即可起步</span></div>
+    <div class="stat"><b>1</b><span>个容器即可起步（默认端口 5212）</span></div>
   </div>
 </div>
 
@@ -331,12 +334,13 @@ footer a:hover{color:var(--text)}
   <div class="wrap">
     <div class="sec-head"><h2>部署</h2><span class="sec-note">Node 22 · SQLite · 无构建</span></div>
     <p class="sub">有 Docker 就用 compose；想在本地先摸一遍，也能直接起进程。前端是纯 HTML/CSS/JS，不依赖任何 CDN。</p>
-    <div class="cards">
+    <div class="cards deploy-cards">
       <div class="card">
         <h3>Docker</h3>
         <pre><span class="k">cp</span> .env.example .env
 <span class="c"># 填 ADMIN_PASSWORD 与对外地址</span>
-<span class="k">docker</span> compose up -d</pre>
+<span class="k">docker</span> compose up -d
+<span class="c"># 宿主 http://localhost:5212</span></pre>
       </div>
       <div class="card">
         <h3>本地进程</h3>
@@ -345,10 +349,19 @@ footer a:hover{color:var(--text)}
 <span class="c"># 默认 http://127.0.0.1:8099</span></pre>
       </div>
       <div class="card">
+        <h3>官方镜像 <span class="tag on">GHCR</span></h3>
+        <pre><span class="k">docker</span> run -d --name r6t5-drive \
+  -p <span class="a">5212</span>:<span class="a">5212</span> \
+  -e SESSION_SECRET=$(<span class="k">openssl</span> rand -hex 32) \
+  -v "$PWD/data:/app/data" \
+  ghcr.io/tanchipanda/r6t5-drive:latest</pre>
+      </div>
+      <div class="card">
         <h3>管理员密码</h3>
         <p><code>ADMIN_PASSWORD</code> 留空时首启随机生成，只往日志打印一次。之后可在后台改站点设置。</p>
       </div>
     </div>
+    <p class="img-note">镜像由 GitHub Actions 构建并冒烟启动后发布：<code>ghcr.io/tanchipanda/r6t5-drive</code>，标签 <code>latest</code> 与 <code>sha-&lt;提交&gt;</code>。容器内端口与应用默认端口都是 <b>5212</b>。</p>
   </div>
 </section>
 
