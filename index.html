@@ -96,6 +96,18 @@ h2{font-family:var(--serif);font-weight:600;font-size:clamp(23px,3.4vw,32px);lin
 .hc-label{font-size:12px;color:var(--muted);margin-bottom:12px}
 .hc-alert{border:1px solid rgba(217,164,65,.45);background:rgba(217,164,65,.08);color:#E8C888;border-radius:8px;padding:12px 14px;font-size:13.5px;line-height:1.6}
 .hint-card p{color:var(--muted);font-size:13px;margin-top:14px}
+.win-box{margin-top:16px;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:18px 18px 14px}
+.wb-head{font-size:13px;color:var(--amber);margin-bottom:8px}
+.win-box p{color:var(--muted);font-size:13px;margin-top:10px}
+.spec{margin-top:26px;border:1px solid var(--line);border-radius:12px;overflow:hidden;background:var(--panel)}
+.spec table{width:100%;border-collapse:collapse;table-layout:fixed;font-size:13.5px}
+.spec th,.spec td{padding:12px 14px;text-align:left;vertical-align:top;border-bottom:1px solid var(--line)}
+.spec tr:last-child td{border-bottom:none}
+.spec th{color:var(--muted);font-weight:500;font-size:12.5px;background:rgba(255,255,255,.02)}
+.spec td:first-child{color:var(--text)}
+.cfg{margin-top:16px;background:var(--panel);border:1px solid var(--line);border-radius:12px;overflow:hidden}
+.cfg-head{padding:11px 16px;border-bottom:1px solid var(--line);font-size:12.5px;color:var(--muted)}
+.cfg p{color:var(--muted);font-size:13px;padding:12px 16px 4px}
 .img-note{margin-top:16px;color:var(--muted);font-size:13px;line-height:1.8}
 .timeline-card{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:22px 20px;margin-top:30px}
 
@@ -148,6 +160,7 @@ footer a:hover{color:var(--text)}
       <a href="#features">功能</a>
       <a href="#storage">存储</a>
       <a href="#deploy">部署</a>
+      <a href="#container">推荐配置</a>
       <a href="#roadmap">路线图</a>
     </div>
     <a class="nav-cta" href="https://github.com/TanchiPanda/r6t5-drive" target="_blank" rel="noopener">源码仓库</a>
@@ -362,6 +375,89 @@ footer a:hover{color:var(--text)}
       </div>
     </div>
     <p class="img-note">镜像由 GitHub Actions 构建并冒烟启动后发布：<code>ghcr.io/tanchipanda/r6t5-drive</code>，标签 <code>latest</code> 与 <code>sha-&lt;提交&gt;</code>。容器内端口与应用默认端口都是 <b>5212</b>。</p>
+
+    <div class="win-box">
+      <div class="wb-head">Windows 下不要直接复制上面那行</div>
+      <pre><span class="c"># PowerShell（CMD 里 $(...) 不展开，会去拉一个叫 rand 的镜像）</span>
+New-Item -ItemType Directory -Force -Path .\data | Out-Null
+<span class="k">docker</span> run -d --name r6t5-drive -p <span class="a">5212</span>:<span class="a">5212</span> `
+  -v "${PWD}\data:/app/data" `
+  -e "TZ=Asia/Shanghai" `
+  ghcr.io/tanchipanda/r6t5-drive:latest</pre>
+      <p>会话密钥可以不传，程序会自动生成并落盘到 <code>data/</code>；首次管理员密码看 <code>docker logs r6t5-drive</code>。</p>
+    </div>
+  </div>
+</section>
+
+<section id="container">
+  <div class="wrap">
+    <div class="sec-head"><h2>容器推荐配置</h2><span class="sec-note">单进程 + SQLite，别按大集群想</span></div>
+    <p class="sub">应用只有一个 Node 进程，元数据是 SQLite，文件走数据卷或对象存储。下面这套是按「能跑稳、出问题好查」给的，不是压测极限值。</p>
+
+    <div class="spec">
+      <table>
+        <colgroup><col style="width:26%"><col style="width:37%"><col style="width:37%"></colgroup>
+        <tr><th>规模</th><th>CPU / 内存</th><th>磁盘</th></tr>
+        <tr><td>起步 / 自用</td><td>1 vCPU · 512 MB</td><td>系统盘之外，按用户组总配额 × 1.2 预留</td></tr>
+        <tr><td>10 人以内</td><td>2 vCPU · 1 GB</td><td>同上；数据卷放本地 SSD，别放网络盘</td></tr>
+        <tr><td>30–50 人</td><td>4 vCPU · 2 GB</td><td>对象存储接管大文件，本地只留 SQLite</td></tr>
+      </table>
+    </div>
+
+    <div class="cards">
+      <div class="card">
+        <h3>必须做的事</h3>
+        <ul>
+          <li>挂载 <code>/app/data</code>：SQLite 与用户文件都在里面，不挂等于每次重启清零</li>
+          <li><code>restart: unless-stopped</code>，开机自动回来</li>
+          <li>生产环境显式给 <code>SESSION_SECRET</code>，或至少别删 <code>data</code></li>
+          <li>反向代理放开上传大小并关缓冲（Nginx <code>client_max_body_size 0</code> + <code>proxy_request_buffering off</code>）</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h3>不建议做的事</h3>
+        <ul>
+          <li>多个容器共享同一个 <code>data</code>：SQLite 单写，第二个进程会锁库</li>
+          <li><code>data</code> 放 NFS / 网盘：上传流式写入对延迟敏感</li>
+          <li>把 <code>DEV_AUTH</code> 开在生产：那是本地联调绕过 Supabase 的开关</li>
+          <li>直接暴露 5212 到公网：前面套一层 HTTPS 反代</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h3>备份与升级</h3>
+        <ul>
+          <li>备份就是备份 <code>data/</code>：SQLite 库 + 全部用户文件</li>
+          <li>热备前先 <code>docker stop r6t5-drive</code>，避免拷到写了一半的库</li>
+          <li>升级：<code>docker pull</code> 新镜像后 <code>up -d</code>，数据在卷里不受影响</li>
+          <li>回滚用 <code>sha-&lt;提交&gt;</code> 标签，比 <code>latest</code> 可控</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="cfg">
+      <div class="cfg-head">推荐 compose（含资源上限与健康检查）</div>
+      <pre>services:
+  drive:
+    image: ghcr.io/tanchipanda/r6t5-drive:latest
+    container_name: r6t5-drive
+    restart: unless-stopped
+    ports: ["<span class="a">5212</span>:<span class="a">5212</span>"]
+    env_file: [.env]
+    environment:
+      TZ: Asia/Shanghai
+      SESSION_SECRET: ${SESSION_SECRET}
+      TRASH_RETENTION_DAYS: "30"
+    volumes: ["./data:/app/data"]
+    deploy:
+      resources:
+        limits: { cpus: "2.0", memory: 1G }
+    healthcheck:
+      test: ["CMD","node","-e","fetch('http://127.0.0.1:5212/api/setup/status').then(r=>process.exit(r.ok?0:1))"]
+      interval: 30s
+      timeout: 5s
+      retries: 3</pre>
+      <p>内存上限给 1G 是留了 Node 的余量；单文件几百 MB 的上传会短暂占用内存，长期跑大文件建议切 S3 策略。</p>
+    </div>
   </div>
 </section>
 
