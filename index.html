@@ -122,8 +122,8 @@ h2{font-family:var(--serif);font-weight:600;font-size:clamp(23px,3.4vw,32px);lin
 .img-note{margin-top:16px;color:var(--muted);font-size:13px;line-height:1.8}
 .timeline-card{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:22px 20px;margin-top:30px}
 
-.timeline{display:grid;grid-template-columns:48px 12px 1fr;gap:0 14px}
-.tl-time{font-size:12.5px;color:var(--muted);padding:10px 0;text-align:right;font-variant-numeric:tabular-nums}
+.timeline{display:grid;grid-template-columns:62px 12px 1fr;gap:0 14px}
+.tl-time{font-size:12.5px;color:var(--muted);padding:10px 0;text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
 .tl-rail{position:relative}
 .tl-rail::before{content:"";position:absolute;left:50%;top:0;bottom:0;width:1px;background:var(--line);transform:translateX(-50%)}
 .tl-dot{position:absolute;left:50%;top:16px;width:7px;height:7px;border-radius:50%;background:var(--green);transform:translate(-50%,0)}
@@ -179,6 +179,7 @@ footer a:hover{color:var(--text)}
       <a href="#deploy">部署</a>
       <a href="#container">推荐配置</a>
       <a href="#roadmap">路线图</a>
+      <a href="#changelog">更新记录</a>
     </div>
     <a class="nav-cta" href="https://github.com/TanchiPanda/r6t5-drive" target="_blank" rel="noopener">源码仓库</a>
   </div>
@@ -246,8 +247,8 @@ footer a:hover{color:var(--text)}
         <p>空间、单文件、7 天上传流量分别拦截，三种错误码三套文案，不糊成一个「失败」。</p>
       </div>
       <div class="card">
-        <h3>分享与预览 <span class="tag plan">接口位</span></h3>
-        <p>分享（有效期 / 提取码 / 次数）与图片视频文本预览已留好契约，页面是诚实空态。</p>
+        <h3>分享与预览 <span class="tag on">可用</span></h3>
+        <p>每条分享单独设有效期、提取码、下载次数；图片、视频（支持拖动）、文本、Markdown、PDF 都能直接看。</p>
       </div>
     </div>
   </div>
@@ -298,16 +299,16 @@ footer a:hover{color:var(--text)}
         <p>挂载到容器内的磁盘目录，读写皆可。适合单机、私有服务器，文件就是目录里的文件。</p>
       </div>
       <div class="policy">
-        <span class="state tag plan">接口位</span>
+        <span class="state tag on">可用</span>
         <div class="kind">OBJECT STORAGE</div>
         <h3>S3 兼容</h3>
-        <p>按 S3 协议接入对象存储；七牛、阿里 OSS、腾讯 COS、华为 OBS 等适配器位已留，逐个补。</p>
+        <p>自研 SigV4 读写，支持 path-style 与自定义 prefix；已带阿里 OSS、腾讯 COS、金山 KS3、华为 OBS 适配器，七牛与又拍暂为只读。</p>
       </div>
       <div class="policy">
-        <span class="state tag plan">接口位</span>
+        <span class="state tag on">只读</span>
                 <div class="kind">REPOSITORY</div>
         <h3>GitHub 仓库</h3>
-        <p>只读接入一个仓库分支，适合把文档、素材库直接当文件源展示，不允许写入。</p>
+        <p>只读接入一个仓库分支，适合把文档、素材库直接当文件源展示；写入会被明确拒绝，不会假装成功。</p>
       </div>
     </div>
   </div>
@@ -518,22 +519,61 @@ New-Item -ItemType Directory -Force -Path .\data | Out-Null
       <div class="tl-body"><b>文件核心 · 已完成</b><span>目录、上传下载、回收站、三档配额、管理后台 8 页。</span></div>
 
       <div class="tl-time">P2</div>
-      <div class="tl-rail"><div class="tl-dot plan"></div></div>
-      <div class="tl-body"><b>多存储后端</b><span>S3 兼容读写、GitHub 只读策略、目录绑定策略。</span></div>
+      <div class="tl-rail"><div class="tl-dot"></div></div>
+      <div class="tl-body"><b>多存储后端 · 已完成</b><span>S3 兼容读写、GitHub 只读策略、目录绑定（最深匹配优先）。</span></div>
 
       <div class="tl-time">P3</div>
-      <div class="tl-rail"><div class="tl-dot plan"></div></div>
-      <div class="tl-body"><b>分享与预览</b><span>每个分享单独设有效期、提取码、次数；图片视频文本预览。</span></div>
+      <div class="tl-rail"><div class="tl-dot"></div></div>
+      <div class="tl-body"><b>分享与预览 · 已完成</b><span>有效期 / 提取码 / 次数 / 目录分享；图片、视频 Range、文本、Markdown、PDF。</span></div>
 
       <div class="tl-time">P4</div>
-      <div class="tl-rail"><div class="tl-dot plan"></div></div>
-      <div class="tl-body"><b>传输增强</b><span>分片断点续传、批量打包下载、在线压缩解压。</span></div>
+      <div class="tl-rail"><div class="tl-dot"></div></div>
+      <div class="tl-body"><b>传输增强 · 已完成</b><span>分片断点续传、流式打包下载、在线压缩解压（防 zip slip）。</span></div>
 
-      <div class="tl-time">P5+</div>
+      <div class="tl-time">P5</div>
+      <div class="tl-rail"><div class="tl-dot"></div></div>
+      <div class="tl-body"><b>扩展能力 · 部分完成</b><span>WebDAV 与应用密码、离线下载（aria2 可选）、OnlyOffice（可选）已接；PWA 与多语言待做。</span></div>
+
+      <div class="tl-time">P6</div>
+      <div class="tl-rail"><div class="tl-dot"></div></div>
+      <div class="tl-body"><b>控制台 · 已完成</b><span>账号来源切换（Supabase / 数据卷）、用户抽屉（最后登录、注册时间、开目录、封禁、删号）。</span></div>
+
+      <div class="tl-time">P7</div>
+      <div class="tl-rail"><div class="tl-dot"></div></div>
+      <div class="tl-body"><b>账号与配额 · 已完成</b><span>邮箱+两次密码自助注册、sudo 用户组、空间单位 MB–EB、发布流程（VERSION / latest.json / issue）。</span></div>
+
+      <div class="tl-time">P8</div>
       <div class="tl-rail"><div class="tl-dot plan"></div></div>
-      <div class="tl-body"><b>扩展能力</b><span>WebDAV、离线下载、媒体元数据、Office 在线编辑、PWA 与多语言。</span></div>
+      <div class="tl-body"><b>品牌与安全 · 进行中</b><span>LOGO / favicon / PWA 图标、侧边栏 HTML、注册域过滤、SMTP 与邮箱确认、Turnstile。</span></div>
+
+      <div class="tl-time">P9</div>
+      <div class="tl-rail"><div class="tl-dot plan"></div></div>
+      <div class="tl-body"><b>积分与商店 · 后端就绪</b><span>积分台账、容量包、会员升级、兑换码、付费分享；商店页面与 AES-256 加密在排队。</span></div>
     </div>
     </div>
+  </div>
+</section>
+
+<section id="changelog">
+  <div class="wrap">
+    <div class="sec-head"><h2>更新记录</h2><span class="sec-note">按版本号倒序</span></div>
+    <p class="sub">每个版本对应仓库里的一篇 issue，评论里写当天改了什么；<code>latest.json</code> 记录版本号、issue 编号与评论 ID，管理控制台据此提示升级。</p>
+    <div class="timeline-card">
+    <div class="timeline">
+      <div class="tl-time">开发中</div>
+      <div class="tl-rail"><div class="tl-dot plan"></div></div>
+      <div class="tl-body"><b>20261115b · 未发版</b><span>品牌与外观（LOGO / favicon / 侧边栏 HTML）、注册域策略、SMTP 与邮箱确认、Turnstile；积分 / 容量商店 / 会员商店 / 兑换码 / 付费分享后端；OSS、COS、KS3、OBS、七牛、又拍存储适配器与 OAuth 客户端。商店页面与 AES-256 加密仍在做。</span></div>
+
+      <div class="tl-time">2026-11-15</div>
+      <div class="tl-rail"><div class="tl-dot"></div></div>
+      <div class="tl-body"><b>20261115a · 已发布</b><span>控制台新增账号来源开关（Supabase / 数据卷）与用户抽屉：最后登录、注册时间、打开用户目录、封禁、一键删号；边栏改用 SVG 图标。对应 issue #1。</span></div>
+
+      <div class="tl-time">2026-11-15</div>
+      <div class="tl-rail"><div class="tl-dot"></div></div>
+      <div class="tl-body"><b>P2–P7 · 已上线</b><span>多存储后端与目录绑定、分享与预览、分片续传与打包压缩、WebDAV / 离线下载 / OnlyOffice 可选集成、用户组 sudo 与 MB–EB 配额、邮箱自助注册。</span></div>
+    </div>
+    </div>
+    <p class="img-note">版本文件：<a href="https://github.com/TanchiPanda/r6t5-drive/blob/main/latest.json" target="_blank" rel="noopener">latest.json</a> · 发布流程：<a href="https://github.com/TanchiPanda/r6t5-drive/blob/main/RELEASING.md" target="_blank" rel="noopener">RELEASING.md</a></p>
   </div>
 </section>
 
@@ -555,7 +595,7 @@ New-Item -ItemType Directory -Force -Path .\data | Out-Null
       </details>
       <details>
         <summary>现在能直接拿来用吗？</summary>
-        <p>单机存储 + 多用户 + 配额这条主线可用，接口自检 28 项全过。S3、分享、预览等按契约返回未实现，页面是空态而不是假数据，适合内部试用与二次开发。</p>
+        <p>主线可用：接口自检 90 项全过，分享、预览、分片上传、打包压缩、WebDAV 都通了；积分与商店后端已就绪，商店界面和 AES-256 加密存储仍在收尾。没做完的能力在页面上会明确写「未启用」。</p>
       </details>
     </div>
   </div>
